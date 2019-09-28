@@ -19,4 +19,30 @@ need Rust 1.30+) and have Go compiler installed. To run tests for `libbolt-go`, 
 
 ### Example usage
 
-TODO: add sample code here
+To import the library, do the following:
+
+	import (
+		"fmt"
+		"github.com/boltlabs-inc/libbolt-go"
+	)
+	
+To create new channel state:
+
+	channelState, _ := libbolt.BidirectionalChannelSetup("New zkChannel", false)
+	fmt.Println("channelState := ", channelState)
+	
+To initiate merchant state:
+	
+	channelToken, merchState, channelState, err := libbolt.BidirectionalInitMerchant(channelState, "Bob")
+		
+To initiate customer state:
+	
+	b0Cust := 1000
+	b0Merch := 0
+	channelToken, custState, err := libbolt.BidirectionalInitCustomer(channelToken, b0Cust, b0Merch, "Alice")
+	
+...
+
+TODO: add channel establish and pay protocol usage
+
+TODO: include channel closing
