@@ -81,24 +81,34 @@ Customer verifies the pay token and establishes the channel if token is valid
 Phase 1 - Customer generates a payment proof and new customer state
 	
 	amount := 200
-	payment, newCustState, err := BidirectionalPayGeneratePaymentProof(channelState, custState, amount)
+	payment, newCustState, err := libbolt.BidirectionalPayGeneratePaymentProof(channelState, custState, amount)
 
 Phase 1 - Merchant verifies the payment proof and generates a close token
 
-	closeToken, merchState, err = BidirectionalPayVerifyPaymentProof(channelState, payment, merchState)
+	closeToken, merchState, err = libbolt.BidirectionalPayVerifyPaymentProof(channelState, payment, merchState)
 
 Phase 2 - Customer verifies the close token, updates the customer state and generates a revoke token for previous state of channel
 
-	revokeToken, custState, err := BidirectionalPayGenerateRevokeToken(channelState, custState, newCustState, closeToken)
+	revokeToken, custState, err := libbolt.BidirectionalPayGenerateRevokeToken(channelState, custState, newCustState, closeToken)
 
 Phase 2 - Merchant verifies the revoke token and generates the pay token for next run of pay protocol
 
-	payToken, merchState, err = BidirectionalPayVerifyRevokeToken(revokeToken, merchState)
+	payToken, merchState, err = libbolt.BidirectionalPayVerifyRevokeToken(revokeToken, merchState)
 
 Customer verifies the pay token and updates internal state with it if valid
 
-	custState, isTokenValid, err := BidirectionalPayVerifyPaymentToken(channelState, custState, payToken)
+	custState, isTokenValid, err := libbolt.BidirectionalPayVerifyPaymentToken(channelState, custState, payToken)
 
 ## Channel closing
 
-TODO: include channel closing
+To initiate a customer close, the customer first generates a close message as follows (then forms close tx):
+
+	custClose, err := libbolt.BidirectionalCustomerClose(channelState, custState)
+	# form cust close tx here
+	
+To check whether customer broadcasted an old state, the merchant does the following (with on-chain close message from customer during dispute period): 
+
+	wpk, merchClose, err, _ := libbolt.BidirectionalMerchantClose(channelState, channelToken, "<pk-address>", custClose, merchState)
+	# form merch close tx here
+
+**TODO**: show merchant-initiated close
