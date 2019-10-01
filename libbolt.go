@@ -153,6 +153,14 @@ type CustClose struct {
 	Signature Signature `json:"signature"`
 }
 
+// (darius) used to construct the "open_channel" message in lnd
+type ZkChannelParams struct {
+	ChannelToken    ChannelToken	`json:"chantoken"`
+	Commitment      Commitment	`json:"commitment"`
+	CommitmentProof CommitmentProof	`json:"commproof"`
+	CustPkC         string		`json:"custstatepkc"`
+}
+
 func BidirectionalChannelSetup(name string, channelSupport bool) (ChannelState, error) {
 	resp := C.GoString(C.ffishim_bidirectional_channel_setup(C.CString(name), C.uint(btoi(channelSupport))))
 	r, err := processCResponse(resp)
